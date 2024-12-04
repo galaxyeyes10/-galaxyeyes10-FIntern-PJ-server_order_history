@@ -33,7 +33,7 @@ async def read_order_history(user_id: str, db: Session = Depends(get_db)):
                         MenuTable.menu_img,
                         OrderTable.quantity,
                         MenuTable.menu_name,
-                        MenuTable.price
+                        MenuTable.price 
                         ).join(MenuTable, OrderTable.menu_id == MenuTable.menu_id).filter(OrderTable.user_id == user_id, MenuTable.is_main == "true", OrderTable.is_completed == "true").all()
     sides = db.query(
                         MenuTable.menu_img,
