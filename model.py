@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Boolean
+from sqlalchemy.sql import func
+from sqlalchemy import Column, String, Integer, ForeignKey, Boolean, TIMESTAMP
 from sqlalchemy.orm import relationship
 from db import Base
 
@@ -28,6 +29,7 @@ class StoreTable(Base):
     rating_count = Column(Integer)
     average_rating = Column(Integer)
     reviews = relationship("ReviewTable", back_populates="store")
+    menus = relationship("MenuTable", back_populates="store")
 
 class MenuTable(Base):
     __tablename__ = 'menu'
@@ -41,7 +43,8 @@ class MenuTable(Base):
     description = Column(String)
     price = Column(Integer)
     is_main = Column(Boolean)
-    orders = relationship("OrderTable", back_populates="menu")
+    store = relationship("StoreTable", back_populates="menus")
+    order = relationship("OrderTable", back_populates="menus")
 
 class OrderTable(Base):
     __tablename__ = 'order'
@@ -54,9 +57,9 @@ class OrderTable(Base):
     menu_id = Column(Integer, ForeignKey('public.menu.menu_id'), nullable=False)
     quantity = Column(Integer)
     is_completed = Column(Boolean)
-    order_date = Column(Integer)
+    order_date = order_date = Column(TIMESTAMP, server_default=func.now())
     user = relationship("UserTable", back_populates="orders")
-    menu = relationship("MenuTable", back_populates="orders")
+    menus = relationship("MenuTable", back_populates="order")
 
 class ReviewTable(Base):
     __tablename__ = 'review'

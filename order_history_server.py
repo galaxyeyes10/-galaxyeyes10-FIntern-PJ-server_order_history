@@ -64,6 +64,27 @@ async def read_order_history(user_id: str, db: Session = Depends(get_db)):
     return history + side_history
 
 #재주문 버튼 처리
+@order_history.put("/order/increase/{user_id}/{store_id}/{menu_id}")
+async def increase_order_quantity(user_id: str, menu_id: int, store_id: int, db: Session = Depends(get_db)):
+    order = db.query(OrderTable).filter(OrderTable.user_id == user_id).first()
+    
+    if order:
+        order.quantity += 1
+        db.commit()
+        db.refresh(order)
+
+    else:
+        new_order = OrderTable(
+            user_id=user_id,
+            store_id = store_id,
+            menu_id=menu_id,
+            quantity=1,
+            is_completed=False,
+        )
+        db.add(new_order)
+        db.commit()
+        db.refresh(new_order)
+
 if __name__ == "__order_history__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("app:app", host="0.0.0.0", port=port)
