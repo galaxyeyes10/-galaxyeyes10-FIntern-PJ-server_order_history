@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, Body
 from sqlalchemy.orm import Session
 from model import ReviewTable, UserTable, StoreTable, OrderTable, MenuTable
 from db import session
@@ -81,8 +81,8 @@ async def read_order_history(user_id: str, db: Session = Depends(get_db)):
     return history + side_history
 
 #재주문 버튼 처리, 새로운 order_id반환
-@order_history.put("/order/increase/{user_id}/{store_id}/{menu_id}")
-async def increase_order_quantity(user_id: str, menu_id: int, store_id: int, db: Session = Depends(get_db)):
+@order_history.post("/order/increase/")
+async def increase_order_quantity(user_id: str = Body(...), menu_id: int = Body(...), store_id: int = Body(...), db: Session = Depends(get_db)):
     order = db.query(OrderTable).filter(OrderTable.user_id == user_id).first()
     
     if order:
